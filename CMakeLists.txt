@@ -28,5 +28,5 @@ elseif (WIN32)
     target_link_libraries(AppleMusicStatus2Discord PRIVATE windowsapp)
 endif()
 
-target_include_directories(AppleMusicStatus2Discord PRIVATE src)
+target_include_directories(AppleMusicStatus2Discord PRIVATE src ${discord-rpc_SOURCE_DIR}/include)
 target_link_libraries(AppleMusicStatus2Discord PRIVATE discord-rpc)
