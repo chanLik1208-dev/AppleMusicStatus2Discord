@@ -1,0 +1,1 @@
+# AppleMusicStatus2Discord
