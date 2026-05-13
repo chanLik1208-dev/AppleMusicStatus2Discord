@@ -4,6 +4,16 @@
 #include <thread>
 #include <chrono>
 
+// ANSI Color Codes
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
+#define BOLD    "\033[1m"
+
 // Using a common public Client ID for Apple Music Rich Presence
 const std::string DEFAULT_CLIENT_ID = "773825528921849856";
 
@@ -17,7 +27,10 @@ int main(int argc, char** argv) {
     
     bool last_playing = false;
 
-    std::cout << "Apple Music to Discord RPC started. (Press Ctrl+C to exit)" << std::endl;
+    std::cout << BOLD << MAGENTA << "======================================" << RESET << std::endl;
+    std::cout << BOLD << CYAN << "  🎵 Apple Music to Discord RPC 🎵" << RESET << std::endl;
+    std::cout << BOLD << MAGENTA << "======================================" << RESET << std::endl;
+    std::cout << YELLOW << "Press Ctrl+C to exit." << RESET << "\n" << std::endl;
 
     while (true) {
         MediaInfo info;
@@ -26,7 +39,7 @@ int main(int argc, char** argv) {
                 if (last_playing) {
                     discord.ClearPresence();
                     last_playing = false;
-                    std::cout << "Status: Paused (Cleared RPC)" << std::endl;
+                    std::cout << YELLOW << "[Status] " << RESET << "Paused/Stopped (Cleared Discord RPC)" << std::endl;
                 }
             } else {
                 int64_t start_time = 0;
@@ -47,13 +60,13 @@ int main(int argc, char** argv) {
                 // Using "apple" as the image key which is common for this client ID
                 discord.UpdatePresence(state, details, start_time, end_time, "apple", large_text);
                 last_playing = true;
-                std::cout << "Status: Playing - " << details << " " << state << std::endl;
+                std::cout << GREEN << "[Playing] " << RESET << BOLD << details << RESET << " " << state << std::endl;
             }
         } else {
             if (last_playing) {
                 discord.ClearPresence();
                 last_playing = false;
-                std::cout << "Status: Stopped (Cleared RPC)" << std::endl;
+                std::cout << YELLOW << "[Status] " << RESET << "Apple Music Not Running (Cleared Discord RPC)" << std::endl;
             }
         }
         
