@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
     bool last_playing = false;
     std::string last_song_id = "";
     std::string current_cover_url = "apple";
+    int64_t last_start_time = 0;
 
     std::cout << BOLD << MAGENTA << "======================================" << RESET << std::endl;
     std::cout << BOLD << CYAN << "  🎵 Apple Music to Discord RPC 🎵" << RESET << std::endl;
@@ -124,7 +125,8 @@ int main(int argc, char** argv) {
                 if (last_playing) {
                     discord.ClearPresence();
                     last_playing = false;
-                    std::cout << "\r" << std::string(100, ' ') << "\r"; // Clear line
+                    last_song_id = ""; // Reset so it updates immediately when playing resumes
+                    std::cout << "\r" << std::string(100, ' ') << "\r";
                     std::cout << YELLOW << "[Status] " << RESET << "Paused/Stopped (Cleared Discord RPC)" << std::endl;
                 }
             } else {
@@ -140,18 +142,30 @@ int main(int argc, char** argv) {
                 }
                 
                 std::string current_song_id = info.title + info.artist;
+                
+                // Only update Discord RPC if song changed or time scrubbed by more than 2 seconds
+                bool should_update_rpc = false;
+                
                 if (current_song_id != last_song_id) {
-                    // Song changed, fetch cover
                     current_cover_url = GetAlbumCoverUrl(info.artist, info.title);
                     last_song_id = current_song_id;
-                    std::cout << "\n"; // Print newline when song changes so we don't overwrite the old song log
+                    should_update_rpc = true;
+                    std::cout << "\n";
+                } else if (!last_playing) {
+                    should_update_rpc = true;
+                } else if (std::abs(start_time - last_start_time) > 2) {
+                    should_update_rpc = true;
                 }
                 
-                std::string details = info.title;
-                std::string state = "by " + info.artist;
-                std::string large_text = "Album: " + info.album;
+                if (should_update_rpc) {
+                    std::string details = info.title;
+                    std::string state = "by " + info.artist;
+                    std::string large_text = "Album: " + info.album;
+                    
+                    discord.UpdatePresence(state, details, start_time, end_time, current_cover_url, large_text);
+                    last_start_time = start_time;
+                }
                 
-                discord.UpdatePresence(state, details, start_time, end_time, current_cover_url, large_text);
                 last_playing = true;
                 
                 // Terminal progress bar
@@ -159,13 +173,14 @@ int main(int argc, char** argv) {
                 std::string time_str = FormatTime(info.position_sec) + " / " + FormatTime(info.duration_sec);
                 
                 std::cout << "\r" << std::string(100, ' ') << "\r"; // Clear line
-                std::cout << GREEN << "[Playing] " << RESET << BOLD << details << RESET << " " << state 
+                std::cout << GREEN << "[Playing] " << RESET << BOLD << info.title << RESET << " by " << info.artist 
                           << "  " << CYAN << progress_bar << " " << time_str << RESET << std::flush;
             }
         } else {
             if (last_playing) {
                 discord.ClearPresence();
                 last_playing = false;
+                last_song_id = "";
                 std::cout << "\r" << std::string(100, ' ') << "\r"; // Clear line
                 std::cout << YELLOW << "[Status] " << RESET << "Apple Music Not Running (Cleared Discord RPC)" << std::endl;
             }
@@ -176,7 +191,6 @@ int main(int argc, char** argv) {
 #endif
         Discord_RunCallbacks();
         
-        // Polling every 1 second for smooth progress bar updates
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
