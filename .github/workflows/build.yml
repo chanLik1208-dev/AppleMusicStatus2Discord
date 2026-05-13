@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1.13
@@ -32,14 +32,14 @@ jobs:
       
     - name: Upload Artifact (macOS)
       if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AppleMusicStatus2Discord-macOS
         path: build/AppleMusicStatus2Discord
         
     - name: Upload Artifact (Windows)
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AppleMusicStatus2Discord-Windows
         path: build/Release/AppleMusicStatus2Discord.exe
