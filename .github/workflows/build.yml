@@ -1,0 +1,45 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1.13
+      with:
+        cmake-version: '3.21.x'
+
+    - name: Configure CMake
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+        
+    - name: Build
+      run: cmake --build build --config Release
+      
+    - name: Upload Artifact (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v3
+      with:
+        name: AppleMusicStatus2Discord-macOS
+        path: build/AppleMusicStatus2Discord
+        
+    - name: Upload Artifact (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v3
+      with:
+        name: AppleMusicStatus2Discord-Windows
+        path: build/Release/AppleMusicStatus2Discord.exe
