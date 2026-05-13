@@ -12,6 +12,11 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/discordapp/discord-rpc.git
     GIT_TAG        master
 )
+
+# Prevent discord-rpc from running clang-format which fails on modern systems
+set(CLANG_FORMAT_CMD "CLANG_FORMAT_CMD-NOTFOUND" CACHE FILEPATH "Disable clang-format for discord-rpc" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 FetchContent_MakeAvailable(discord-rpc)
 
 add_executable(AppleMusicStatus2Discord
