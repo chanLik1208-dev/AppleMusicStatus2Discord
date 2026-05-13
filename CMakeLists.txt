@@ -14,7 +14,7 @@ FetchContent_Declare(
 )
 
 # Prevent discord-rpc from running clang-format which fails on modern systems
-set(CLANG_FORMAT_CMD "CLANG_FORMAT_CMD-NOTFOUND" CACHE FILEPATH "Disable clang-format for discord-rpc" FORCE)
+set(CLANG_FORMAT_CMD ${CMAKE_COMMAND} -E true CACHE STRING "Disable clang-format for discord-rpc" FORCE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(discord-rpc)
