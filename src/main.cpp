@@ -158,9 +158,9 @@ int main(int argc, char** argv) {
                 }
                 
                 if (should_update_rpc) {
-                    std::string details = info.title;
-                    std::string state = "by " + info.artist;
-                    std::string large_text = "Album: " + info.album;
+                    std::string details = "[ ▶ ] " + info.title;
+                    std::string state = "👤 " + info.artist;
+                    std::string large_text = "💿 " + info.album;
                     
                     discord.UpdatePresence(state, details, start_time, end_time, current_cover_url, large_text);
                     last_start_time = start_time;
